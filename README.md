@@ -4,6 +4,12 @@ This repository contains a Python implementation of the WebRTC driver to connect
 
 ![Description of the image](https://github.com/legion1581/unitree_webrtc_connect/raw/master/images/screenshot_1.png)
 
+
+[![PyPI](https://img.shields.io/pypi/v/unitree-webrtc-connect.svg)](https://pypi.org/project/unitree-webrtc-connect/)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/legion1581/unitree_webrtc_connect)](https://github.com/legion1581/unitree_webrtc_connect/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 ## Currently Supported Firmware Versions
 
 **Go2:**
