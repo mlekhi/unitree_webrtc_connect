@@ -19,6 +19,9 @@ ROBOT_IP = ""
 # Move speed (forward/back = x, left/right = y; tune to your liking)
 SPEED_X = 0.4
 SPEED_Y = 0.35
+# Turn test: Move(0,0,z) = yaw rate (rad/s). Higher = faster spin. X to stop early.
+TURN_Z = 1.2
+TURN_DURATION = 6.0
 
 # Single-key reading on Unix/macOS
 try:
@@ -74,6 +77,45 @@ async def stop(conn):
     )
 
 
+async def hop(conn):
+    """Jump forward (FrontJump). API also has FrontPounce 1032 / Bound 1304 if you want to try in-place."""
+    await conn.datachannel.pub_sub.publish_request_new(
+        RTC_TOPIC["SPORT_MOD"],
+        {"api_id": SPORT_CMD["FrontJump"], "parameter": {"data": True}},
+    )
+
+
+async def moonwalk(conn):
+    """MoonWalk (sport API)."""
+    await conn.datachannel.pub_sub.publish_request_new(
+        RTC_TOPIC["SPORT_MOD"],
+        {"api_id": SPORT_CMD["MoonWalk"], "parameter": {"data": True}},
+    )
+
+
+async def dance1(conn):
+    """Dance1 (sport API)."""
+    await conn.datachannel.pub_sub.publish_request_new(
+        RTC_TOPIC["SPORT_MOD"],
+        {"api_id": SPORT_CMD["Dance1"], "parameter": {"data": True}},
+    )
+
+
+async def dance2(conn):
+    """Dance2 (sport API)."""
+    await conn.datachannel.pub_sub.publish_request_new(
+        RTC_TOPIC["SPORT_MOD"],
+        {"api_id": SPORT_CMD["Dance2"], "parameter": {"data": True}},
+    )
+
+
+async def turn_test(conn):
+    """Turn: Move(0, 0, TURN_Z) for TURN_DURATION. On this API it may only shift; press X to stop."""
+    await move(conn, 0, 0, TURN_Z)
+    await asyncio.sleep(TURN_DURATION)
+    await stop(conn)
+
+
 async def main():
     if not _HAVE_TERMIOS:
         print("Keyboard control requires Unix/macOS (termios). Run on Mac/Linux.")
@@ -99,7 +141,7 @@ async def main():
                 )
                 await asyncio.sleep(5)
 
-        print("WASD: move  |  Space: stop  |  Q: quit")
+        print("WASD: move  |  Space: hop  |  P: moonwalk  |  1/2: dance1/dance2  |  T: turn test  |  X: stop  |  Q: quit")
         print("(No Enter — just press keys)")
 
         if not stdin_setup():
@@ -113,12 +155,30 @@ async def main():
             key = read_key()
             if key is None:
                 return
-            k = key.decode("utf-8", errors="ignore").lower()
+            k = key.decode("utf-8", errors="ignore").lower() if key else ""
+            # Space can come through as b' ' or as " " after decode
+            is_space = k == " " or key == b" "
             if k == "q":
                 quit_event.set()
                 return
-            if k == " ":
+            if is_space:
+                print("Hop!", flush=True)
+                asyncio.create_task(hop(conn))
+                return
+            if k == "x":
                 asyncio.create_task(stop(conn))
+                return
+            if k == "p":
+                asyncio.create_task(moonwalk(conn))
+                return
+            if k == "1":
+                asyncio.create_task(dance1(conn))
+                return
+            if k == "2":
+                asyncio.create_task(dance2(conn))
+                return
+            if k == "t":
+                asyncio.create_task(turn_test(conn))
                 return
             if k == "w":
                 asyncio.create_task(move(conn, SPEED_X, 0))
