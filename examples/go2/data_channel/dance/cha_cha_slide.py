@@ -56,13 +56,13 @@ async def run_cha_cha_slide(conn):
     await stop(conn)
     await asyncio.sleep(PAUSE)
 
-    # One hop (use built-in FrontJump from sport API)
+    # One hop (Bound = in-place bounce; no forward motion)
     print("One hop!")
     await conn.datachannel.pub_sub.publish_request_new(
         RTC_TOPIC["SPORT_MOD"],
-        {"api_id": SPORT_CMD["FrontJump"], "parameter": {"data": True}},
+        {"api_id": SPORT_CMD["Bound"], "parameter": {"data": True}},
     )
-    await asyncio.sleep(2.0)  # time to land
+    await asyncio.sleep(1.5)  # time to land
     await asyncio.sleep(PAUSE)
 
     # Right foot stomp
@@ -79,13 +79,13 @@ async def run_cha_cha_slide(conn):
     await stop(conn)
     await asyncio.sleep(PAUSE)
 
-    # Cha cha (small steps)
+    # Cha cha (WiggleHips)
     print("Cha cha!")
-    await move(conn, STEP_X, 0)
-    await asyncio.sleep(BEAT)
-    await move(conn, -STEP_X, 0)
-    await asyncio.sleep(BEAT)
-    await stop(conn)
+    await conn.datachannel.pub_sub.publish_request_new(
+        RTC_TOPIC["SPORT_MOD"],
+        {"api_id": SPORT_CMD["WiggleHips"], "parameter": {"data": True}},
+    )
+    await asyncio.sleep(2.0)
     await asyncio.sleep(PAUSE)
 
     # Turn it out (360° – hold yaw rate long enough for one full spin)
