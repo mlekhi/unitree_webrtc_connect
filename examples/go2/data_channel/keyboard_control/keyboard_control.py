@@ -14,7 +14,7 @@ from unitree_webrtc_connect.constants import RTC_TOPIC, SPORT_CMD
 logging.basicConfig(level=logging.FATAL)
 
 # Plug in your Go2's IP address
-ROBOT_IP = "192.168.1.29"
+ROBOT_IP = ""
 
 # Move speed (forward/back = x, left/right = y; tune to your liking)
 SPEED_X = 0.4
